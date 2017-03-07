@@ -1,0 +1,43 @@
+Warning: Permanently added 'poi.mycard.moe,101.37.76.207' (ECDSA) to the list of known hosts.
+locale: Cannot set LC_CTYPE to default locale: No such file or directory
+locale: Cannot set LC_ALL to default locale: No such file or directory
+Attaching: [tmux____1]
+
+
+
+
+
+
+{
+  "author": "ZUN",
+  "homepage": "http://www.myacg.cc",
+  "locales": [
+  "actions": {
+    "win32": {
+      "main": {
+        "execute": "Game.exe",
+        "args": [],
+        "env": {}
+      }
+    },
+    "darwin": {
+      "main": {
+        "execute": "Game.exe",
+        "args": [],
+        "open": "wine",
+        "env": {
+          "LANG": "zh_CN.UTF-8"
+        }
+      }
+    }
+  },
+  "version": {
+    "win32": "1.54e-1",
+    "darwin": "1.54e-1"
+  },
+  "news": [],
+  "conference": "oz",
+  "icon": "https://r.my-card.in/downloads/assets/ozns/Icon%2016x16.png",
+  "cover": "https://r.my-card.in/downloads/assets/ozns/MyCard%20logo%20NS.png",
+  "background": "https://r.my-card.in/downloads/assets/ozns/MyCard%20Background%20NS.jpg"
+  }
