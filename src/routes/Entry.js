@@ -2,6 +2,8 @@ import React from 'react';
 import { connect } from 'dva';
 import styles from './Entry.less';
 import Nav from '../components/Common/Nav'
+import { Router, Route, browserHistory } from 'dva/router';
+
 
 import {Layout} from 'antd'
 
@@ -14,12 +16,12 @@ function Entry({ children, collapsed, mode, dispatch }) {
   }
 
   return (
-    <Layout style={{ flexDirection: 'row', height: '100%'}}>
-        <Nav {...NavProps}/>
-        <Layout style={{ minHeight: '400px'}}>
-          {children}
-        </Layout>
+    <Layout style={{ flexDirection: 'row', minHeight: '100%'}}>
+      <Nav {...NavProps}/>
+      <Layout style={{ minHeight: '400px'}}>
+        {children}
       </Layout>
+    </Layout>
   );
 }
 

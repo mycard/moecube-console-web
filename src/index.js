@@ -1,14 +1,20 @@
 import ReactDOM from 'react-dom';
+import { browserHistory } from 'dva/router'
 import dva from 'dva';
-import './index.css';
+import './index.less';
+
 
 import { IntlProvider, addLocaleData } from 'react-intl';
 
 
 // 1. Initialize
-const app = dva();
+const app = dva({
+    history: browserHistory
+});
 
 app.model(require("./models/Apps"));
+
+app.model(require("./models/user"));
 
 app.model(require("./models/Common"));
 

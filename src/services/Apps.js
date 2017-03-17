@@ -6,7 +6,14 @@ export async function fetch() {
 
 export async function create(params) {
   return request(`/apps/${params.id}`, {
-    method: 'post',
+    method: 'POST',
+    body: JSON.stringify(params)
+  })
+}
+
+export async function update(params) {
+  return request(`/apps/${params.id}`, {
+    method: 'PATCH',
     body: JSON.stringify(params)
   })
 }

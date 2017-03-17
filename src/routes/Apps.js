@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'dva';
 import styles from './Apps.less';
 import {  Link } from 'dva/router';
-import { Button, Affix, Icon, Table } from 'antd'
+import { Button, Affix, Icon, Table, Tag } from 'antd'
 import Create from '../components/App/Create'
 
 
@@ -17,15 +17,28 @@ const columns = [
   }, {
     title: 'Name',
     dataIndex: 'name',
-    render: name => `${Object.values(name)[0]}`,
+    render: name => name && name["zh-CN"],
     width: '10%',
     key: 'name'
   },{
-    title: "Created_At",
-    dataIndex: 'created_at',
+    title: "author",
+    dataIndex: 'author',
+    width: '10%',
+  },{
+    title: "category",
+    dataIndex: 'category',
+    width: '10%',
+  },{
+    title: "homepage",
+    dataIndex: 'homepage',
+    render: homepage => <a href={homepage} target="_blank">{homepage}</a>,
+    width: '10%',
+  },{
+    title: "released_at",
+    dataIndex: 'released_at',
     sorter: true,
     width: '10%',
-    key:'created_at'
+    key:'released_at'
   }, {
     title: "Updated_at",
     dataIndex: 'updated_at',
@@ -35,7 +48,7 @@ const columns = [
   }, 
 ]
 
-function Apps({children, dispatch, isCreate, isSubmit, list}) {
+function Apps({children, dispatch, isCreate, isSubmit, apps}) {
 
   const CreateProps = {
     visible: isCreate,
@@ -55,9 +68,8 @@ function Apps({children, dispatch, isCreate, isSubmit, list}) {
 
   const TableProps = {
     columns,
-    dataSource: list
+    dataSource: Object.values(apps)
   }
-
 
 
   return (
@@ -78,11 +90,11 @@ function Apps({children, dispatch, isCreate, isSubmit, list}) {
 
 function mapStateToProps(state) {
   const {
-    Apps: { list },
+    Apps: { apps },
     App: { isCreate, isSubmit }
   } = state
   return {
-    list,
+    apps,
     isCreate,
     isSubmit
   };

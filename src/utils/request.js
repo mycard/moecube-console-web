@@ -24,7 +24,7 @@ function checkStatus(response) {
  */
 export default function request(url, options) {
   url = `${config.apiRoot}${url}`
-  if(options && !options.headers && options.method == 'post') {
+  if(options && !options.headers && (options.method == 'POST' || options.method == 'PATCH')) {
     options.headers = {
       "content-type": "application/json"
     }
