@@ -16,6 +16,8 @@ app.model(require("./models/Apps"));
 
 app.model(require("./models/user"));
 
+// app.model(require("./models/packages"));
+
 app.model(require("./models/Common"));
 
 app.model(require("./models/App"));

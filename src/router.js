@@ -14,7 +14,6 @@ function RouterConfig({ history }) {
         <Route path="apps" component={Apps} />
         <Route path="apps/:id" component={AppDetail} />
       </Route>
-      
       <Route path="/loginCallback" component={LoginCallback} />
       <Route path="*" component={() => <div>404</div>}/>
     </Router>

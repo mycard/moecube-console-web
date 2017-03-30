@@ -37,6 +37,9 @@ export default {
       } else {
         yield put({ type: 'faile' })
       }
+    },
+    *success({ payload }, { call, put}) {
+      yield put({ type: 'fetch' })
     }
   },
   subscriptions: {

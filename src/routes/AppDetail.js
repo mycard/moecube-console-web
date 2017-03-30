@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'dva';
 import styles from './AppDetail.less';
 import config from '../config'
+import uuid from 'uuid'
 import { Form, Input, Icon, Radio, Tag, Tooltip, Button, Select, Tabs, Upload, Modal, Table, Popconfirm, Row, Col, Card } from 'antd'
 const FormItem = Form.Item;
 const RadioButton = Radio.Button;
@@ -27,17 +28,19 @@ defLocales.forEach(locale => {
   defNews[locale] = []
 })
 
-const defPackage = {
-  id: '',
-  version: '',
-  platforms: [],
-  locales: []
+const defPackage = () => {
+  return {
+    id: uuid.v1(),
+    name: '',
+    version: '',
+    platforms: [],
+    locales: [],
+    isNew: true
+  }
 }
 
 const defPackages = {
-  main: []
 }
-
 
 const formItemLayout = {
   labelCol: { span: 5 },
@@ -48,7 +51,6 @@ const uploadProps = {
   name: 'file',
   multiple: false,
   showUploadList: false,
-  action: '//jsonplaceholder.typicode.com/posts/',
   onChange(info) {
     const status = info.file.status;
     if (status !== 'uploading') {
@@ -75,16 +77,16 @@ class AppDetail extends React.Component {
     developers: {},
     publishers: {},
     news: {},
-    packages: {},
+    packages: [],
     isDanger: false
   };
 
   componentWillReceiveProps(nextProps){
-    const { App:{ developers, publishers, news, packages = {} } } = nextProps
+    const { App:{ developers, publishers, news, packages = [] } } = nextProps
     this.setState({
       developers: {...defDevelopers, ...developers},
       publishers: {...defPublishers, ...publishers},
-      packages: {...defPackages, ...packages},
+      packages: [...defPackages, ...packages],
       news:  {...defNews, ...news},
     })
   }
@@ -124,7 +126,7 @@ class AppDetail extends React.Component {
   onSubmitBase = (e) => {
    const { form, dispatch, params: { id }} = this.props
 
-    e.preventDefault();
+    e && e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
@@ -139,7 +141,7 @@ class AppDetail extends React.Component {
   onSubmitIntro = (e) => {
     const { form, dispatch, params: { id }} = this.props
 
-    e.preventDefault();
+    e && e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
@@ -154,7 +156,7 @@ class AppDetail extends React.Component {
   onSubmitManage = (e) => {
     const { form, dispatch, params: { id }} = this.props
 
-    e.preventDefault();
+    e && e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
@@ -173,45 +175,62 @@ class AppDetail extends React.Component {
   onSubmitUpload = (e) => {
     const { form, dispatch, params: { id }} = this.props
 
-    e.preventDefault();
+    e && e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
         
-        let {packages} = values
+        let {upload: { packages }} = values
 
 
-        // dispatch({type: "Apps/update", payload: {id, packages}})
+        dispatch({type: "Apps/update", payload: {id, packages}})
+      }
+    });
+  }
+
+  onDeletePackage = (_id) => {
+    const { form, dispatch, params: { id }} = this.props
+
+    form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        
+        let {upload: { packages }} = values
+        packages.splice(_id, 1)
+
+        dispatch({type: "Apps/update", payload: {id, packages}})
       }
     });
   }
 
   onEdit = (targetKey, action) => {
-    console.log(targetKey, action)
     this[action](targetKey);
   }
 
 
 
-  add = (targetKey) => {
+  add = async (targetKey) => {
 
     let packages = this.state.packages
 
-    packages["main"].push(defPackage)
+    packages.push(defPackage())
 
-    this.setState({
+    await this.setState({
       packages
     })
+
+    this.onSubmitUpload()    
   }
 
-  remove = (targetKey) => {
+  remove = async (targetKey) => {
     if(!this.props.isDanger) {
       let {packages} = this.state
-      packages["main"].splice(targetKey,1)
+      packages.splice(targetKey,1)
 
-      this.setState({
+      await this.setState({
         packages
       })
+      
+      this.onDeletePackage(targetKey)
     }
   }
 
@@ -591,72 +610,91 @@ class AppDetail extends React.Component {
           <div className={styles.form}>          
             <Tabs type="editable-card" className="app-detail-nav" onEdit={this.onEdit}>
 
-              {packages["main"] && packages["main"].map((pack,i) => {
-                return (
-                  <TabPane tab={pack.id || "New"} key={i} closable={true}>
-                    <Form onSubmit={this.onSubmitUpload}>
+              {packages && packages.map((pack,i) => {
+                if(pack) {
+                  return (
+                    <TabPane tab={pack.name || "New"} key={i} closable={false}>
+                      <Form onSubmit={this.onSubmitUpload}>
 
-                      <FormItem {...formItemLayout} help="id">
-                        {getFieldDecorator(`packages["main"][${i}]["id"]`, {
-                          initialValue: pack["id"]
-                        })(
-                          <Input addonBefore={<Icon type="info-circle-o" />} placeholder="id" />
-                        )}
-                      </FormItem>
+                        <FormItem {...formItemLayout} help="id">
+                          {getFieldDecorator(`upload["packages"][${i}]["id"]`, {
+                            initialValue: pack["id"]
+                          })(
+                            <Input addonBefore={<Icon type="info-circle-o" />} placeholder="id" disabled />
+                          )}
+                        </FormItem>
 
-                      <FormItem {...formItemLayout} help="version">
-                        {getFieldDecorator(`packages["main"][${i}]["version"]`, {
-                          initialValue: pack["version"]
-                        })(
-                          <Input addonBefore={<Icon type="info-circle-o" />} placeholder="版本号" />
-                        )}
-                      </FormItem>
+                        <FormItem {...formItemLayout} help="name">
+                          {getFieldDecorator(`upload["packages"][${i}]["name"]`, {
+                            initialValue: pack["name"]
+                          })(
+                            <Input addonBefore={<Icon type="info-circle-o" />} placeholder="name" />
+                          )}
+                        </FormItem>
 
-                      <FormItem {...formItemLayout} help="platforms">
-                        {getFieldDecorator(`packages["main"][${i}]["platforms"]`, {
-                          initialValue: pack["platforms"]
-                        })(
-                          <Select multiple style={{ width: '100%' }} placeholder="platforms">
-                            {defPlatform.map((_platform,i) => {
-                              return <Select.Option key={i} value={_platform}>{_platform}</Select.Option>
-                            })}
-                          </Select>
-                        )}
-                      </FormItem>
-                      
-                      <FormItem {...formItemLayout} help="locales">
-                        {getFieldDecorator(`packages["main"][${i}]["locales"]`, {
-                          initialValue: pack["locales"]
-                        })(
-                          <Select multiple style={{ width: '100%' }} placeholder="locales">
-                            {defLocales.map((_locales,i) => {
-                              return <Select.Option key={i} value={_locales}>{_locales}</Select.Option>
-                            })}
-                          </Select>
-                        )}
-                      </FormItem>
+                        <FormItem {...formItemLayout} help="version">
+                          {getFieldDecorator(`upload["packages"][${i}]["version"]`, {
+                            initialValue: pack["version"]
+                          })(
+                            <Input addonBefore={<Icon type="info-circle-o" />} placeholder="版本号" />
+                          )}
+                        </FormItem>
 
-                      <FormItem {...formItemLayout}>
-                        {getFieldDecorator(`packages["main"][${i}]["upload"]`, {
-                        })(
-                          <Dragger {...uploadProps}>
-                            <p className="ant-upload-drag-icon">
-                              <Icon type="inbox" />
-                            </p>
-                            <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                            <p className="ant-upload-hint">Support for a single or bulk upload. Strictly prohibit from uploading company data or other band files</p>
-                          </Dragger>
-                        )}
-                      </FormItem>
+                        <FormItem {...formItemLayout} help="platforms">
+                          {getFieldDecorator(`upload["packages"][${i}]["platforms"]`, {
+                            initialValue: pack["platforms"]
+                          })(
+                            <Select multiple style={{ width: '100%' }} placeholder="platforms">
+                              {defPlatform.map((_platform,i) => {
+                                return <Select.Option key={i} value={_platform}>{_platform}</Select.Option>
+                              })}
+                            </Select>
+                          )}
+                        </FormItem>
+                        
+                        <FormItem {...formItemLayout} help="locales">
+                          {getFieldDecorator(`upload["packages"][${i}]["locales"]`, {
+                            initialValue: pack["locales"]
+                          })(
+                            <Select multiple style={{ width: '100%' }} placeholder="locales">
+                              {defLocales.map((_locales,i) => {
+                                return <Select.Option key={i} value={_locales}>{_locales}</Select.Option>
+                              })}
+                            </Select>
+                          )}
+                        </FormItem>
 
-                      <FormItem {...formItemLayout} >
-                        <div className={styles.wrapSubmit}>
-                          <Button type="primary" htmlType="submit" size="large">提交</Button>                  
-                        </div>
-                      </FormItem>
-                    </Form>
-                  </TabPane>
-                )
+                        <FormItem {...formItemLayout}>
+                          {getFieldDecorator(`upload["packages"][${i}]["upload"]`, {
+                          })(
+                            <Dragger 
+                              {...uploadProps} 
+                              action={`${config.apiRoot}/upload/packages/${pack["id"]}`}
+                              disabled={pack.isNew}>
+                              <p className="ant-upload-drag-icon">
+                                <Icon type="inbox" />
+                              </p>
+                              <p className="ant-upload-text">Click or drag file to this area to upload</p>
+                              <p className="ant-upload-hint">Support for a single or bulk upload. Strictly prohibit from uploading company data or other band files</p>
+                            </Dragger>
+                          )}
+                        </FormItem>
+
+                        <FormItem {...formItemLayout} >
+                          <div className={styles.wrapSubmit}>
+                            <Button type="primary" htmlType="submit" size="large">提交</Button>                  
+                          </div>
+                        </FormItem>
+                      </Form>
+                    </TabPane>
+                  )
+                } else {
+                  return (
+                    <TabPane tab={"!"} key={i} closable={true}>
+                      <div>好像出了什么问题， 请联系xxxxxx</div>
+                    </TabPane>
+                  )
+                }
               })}
             </Tabs>
           </div>
