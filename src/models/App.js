@@ -1,4 +1,5 @@
-import { create } from '../services/Apps'
+import {create} from '../services/Apps'
+import {message} from 'antd'
 
 export default {
   namespace: 'App',
@@ -23,13 +24,6 @@ export default {
         isSubmit: true,
       }
     },
-    SubmitSuccess(state, action){
-      return {
-        ...state,
-        isSubmit: false,
-        isCreate: false
-      }
-    },
     onCancel(state, action) {
       return {
         ...state,
@@ -49,8 +43,8 @@ export default {
     }
   },
   effects: {
-    *submit({ payload }, { call, put }){
-      yield put({ type: 'SubmitRequest', payload })
+    *submit({payload}, {call, put}){
+      yield put({type: 'SubmitRequest', payload})
 
       const params = {
         id: payload.id,
@@ -59,13 +53,16 @@ export default {
         }
       }
 
-      const req = yield call(create, params)
-      if(req.data) {
-        yield put({ type: 'SubmitSuccess' })
-        yield put({ type: 'reset' })
-        // TODO: 成功提示
+      try {
+        const {data} = yield call(create, params)
+        if (data) {
+          yield put({type: 'SubmitSuccess'})
+          yield put({type: 'reset'})
+          message.info("i18n 创建成功")
+        }
+      } catch (error) {
+        message.error(error.message)
       }
-      // TODO: 错误处理
     }
   },
   subscriptions: {},

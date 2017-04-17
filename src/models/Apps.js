@@ -1,5 +1,6 @@
-import { fetch, update } from '../services/Apps'
+import {fetch, update} from '../services/Apps'
 import * as crypto from 'crypto'
+import {message} from 'antd'
 import config from '../config'
 
 
@@ -10,47 +11,65 @@ export default {
   },
   reducers: {
     save(state, action) {
-      return { 
-        ...state,   
+      return {
+        ...state,
         ...action.payload
       }
     },
   },
   effects: {
-    *fetch({ payload }, { call, put }) {
-      const { data } = yield call(fetch, payload)
+    *fetch({payload}, {call, put}) {
 
-      let apps = {}
-      if(data && data.length > 0) {
-        data.map(app => {
-          apps[app["id"]] = app
-        })
-      }
-      
-      yield put({ type: 'save', payload: { apps } })
-    },
-    *update({ payload }, {call, put}){
-      const { data } = yield call(update, payload)
+      try {
+        const {data} = yield call(fetch, payload)
 
-      if (data) {
-        yield put({ type: 'success'})
-      } else {
-        yield put({ type: 'faile' })
+        let apps = {}
+        if (data && data.length > 0) {
+          data.map(app => {
+            apps[app["id"]] = app
+          })
+        }
+
+        yield put({type: 'save', payload: {apps}})
+      } catch (error) {
+        message.error(error.message)
       }
     },
-    *success({ payload }, { call, put}) {
-      yield put({ type: 'fetch' })
+    *update({payload}, {call, put}){
+      try {
+        const {data} = yield call(update, payload)
+
+        if (data) {
+          yield put({type: 'success'})
+          message.info("i18n success")
+        }
+      } catch (error) {
+        message.error(error.message)
+      }
+    },
+    *addPackage({payload}, {call, put}){
+      try {
+        const {data} = yield call(update, payload)
+
+        if (data) {
+          yield put({type: 'success'})
+        }
+      } catch (error) {
+        message.error(error.message)
+      }
+    },
+    *success({payload}, {call, put}) {
+      yield put({type: 'fetch'})
     }
   },
   subscriptions: {
-    setup({ dispatch, history }) {
-      return history.listen(({ pathname, query}) => {
+    setup({dispatch, history}) {
 
-        if(/^apps/.test(pathname)) {
+      dispatch({type: 'fetch'})
 
-          dispatch({ type: 'fetch', payload: query})
-          
-        } else if(pathname === '/login'){
+      return history.listen(({pathname, query}) => {
+
+        if (pathname === '/login') {
           let params = new URLSearchParams()
           params.set('return_sso_url', config.returnSSO)
           let payload = Buffer.from(params.toString()).toString('base64')
@@ -59,7 +78,7 @@ export default {
           params.set('sso', payload);
           params.set('sig', crypto.createHmac('sha256', 'zsZv6LXHDwwtUAGa').update(payload).digest('hex'))
 
-          window.location.href=url
+          window.location.href = url
         }
       })
     }

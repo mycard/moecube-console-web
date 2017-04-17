@@ -1,9 +1,18 @@
 import React from 'react';
 import styles from './Create.css';
 import { Button, Modal, Form, Input, Radio, Select, Spin } from 'antd';
+import { connect } from 'dva'
 const FormItem = Form.Item;
 
+@connect(
+  (state, props) => {
+    const { loading } = state
 
+    return {
+      loading
+    }
+  }
+)
 class Create extends React.Component {
 
   handleSubmit = (e) => {
@@ -20,11 +29,11 @@ class Create extends React.Component {
   }
 
   handleSelectChange = (value) => {
-    
+
   }
 
   render() {
-    const { visible, onCancel, form, isLoading } = this.props;
+    const { visible, onCancel, form, loading } = this.props;
     const { getFieldDecorator } = form;
 
     return (
@@ -34,7 +43,7 @@ class Create extends React.Component {
         okText="提交"
         onCancel={onCancel}
         onOk={this.handleSubmit}>
-        <Spin spinning={isLoading} delay={100} tip="提交中...">
+        <Spin spinning={loading.global} delay={100} tip="提交中...">
 
           <Form vertical onSubmit={this.handleSubmit}>
             <FormItem label="应用 ID (创建应用后无法修改)">
@@ -56,7 +65,7 @@ class Create extends React.Component {
             <FormItem
               label="主要语言"
               wrapperCol={{ span: 8 }}>
-              
+
               {getFieldDecorator('locale', {
                 rules: [{ required: true, message: '请至少选择一门主要语言' }],
                 onChange: this.handleSelectChange,
@@ -65,13 +74,13 @@ class Create extends React.Component {
                   <Select.Option value="zh-CN">zh-CN</Select.Option>
                   <Select.Option value="zh-TW">zh-TW</Select.Option>
                   <Select.Option value="en-US">en-US</Select.Option>
-                  <Select.Option value="ja-JP">ja-JP</Select.Option>                
+                  <Select.Option value="ja-JP">ja-JP</Select.Option>
                 </Select>
               )}
             </FormItem>
 
           </Form>
-        </Spin>          
+        </Spin>
       </Modal>
     );
   }

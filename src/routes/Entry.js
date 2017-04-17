@@ -1,23 +1,14 @@
 import React from 'react';
 import { connect } from 'dva';
-import styles from './Entry.less';
 import Nav from '../components/Common/Nav'
-import { Router, Route, browserHistory } from 'dva/router';
 
 
 import {Layout} from 'antd'
 
-function Entry({ children, collapsed, mode, dispatch }) {
-
-  const NavProps = {
-    collapsed, 
-    mode, 
-    dispatch
-  }
-
+function Entry({ children}) {
   return (
     <Layout style={{ flexDirection: 'row', minHeight: '100%'}}>
-      <Nav {...NavProps}/>
+      <Nav />
       <Layout style={{ minHeight: '400px'}}>
         {children}
       </Layout>
@@ -26,13 +17,7 @@ function Entry({ children, collapsed, mode, dispatch }) {
 }
 
 function mapStateToProps(state) {
-  const {
-    Common: {collapsed, mode}
-  } = state
-  return {
-    collapsed,
-    mode
-  };
+  return {}
 }
 
 export default connect(mapStateToProps)(Entry);

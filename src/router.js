@@ -11,11 +11,10 @@ function RouterConfig({ history }) {
   return (
     <Router history={history}>
       <Route path="/" component={Entry} >
-        <Route path="apps" component={Apps} />
-        <Route path="apps/:id" component={AppDetail} />
+        <Route path="/apps/:id" component={AppDetail} />
+        <Route path="/apps" component={Apps} />
       </Route>
       <Route path="/loginCallback" component={LoginCallback} />
-      <Route path="*" component={() => <div>404</div>}/>
     </Router>
   );
 }
