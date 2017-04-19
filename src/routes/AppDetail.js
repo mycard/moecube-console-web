@@ -2,6 +2,7 @@ import React from 'react';
 import {connect} from 'dva';
 import styles from './AppDetail.less';
 import config from '../config'
+import vercomp from 'vercomp'
 import uuid from 'uuid'
 import {
   Form,
@@ -16,6 +17,9 @@ import {
   Upload,
   Modal,
   Table,
+  Badge,
+  Alert,
+  message,
   Popconfirm,
   Row,
   Col,
@@ -29,6 +33,11 @@ const Option = Select.Option;
 const TabPane = Tabs.TabPane;
 const Dragger = Upload.Dragger;
 const confirm = Modal.confirm
+
+const statusMap = {
+  'failed': 'error',
+  'uploading': 'processing'
+}
 
 const defCategory = ["game", "runtime", "emulator", "module"]
 const defLocales = ["zh-CN", "zh-TW", "en-US", "ja-JP"]
@@ -47,11 +56,7 @@ defLocales.forEach(locale => {
 const defPackage = () => {
   return {
     id: uuid.v1(),
-    name: '',
-    version: '',
-    platforms: [],
-    locales: [],
-    isNew: true
+    status: 'new'
   }
 }
 
@@ -66,17 +71,7 @@ const uploadProps = {
   name: 'file',
   multiple: false,
   showUploadList: false,
-  onChange(info) {
-    const status = info.file.status;
-    if (status !== 'uploading') {
-      console.log(info.file, info.fileList);
-    }
-    if (status === 'done') {
-      // message.success(`${info.file.name} file uploaded successfully.`);
-    } else if (status === 'error') {
-      // message.error(`${info.file.name} file upload failed.`);
-    }
-  },
+
 }
 
 
@@ -95,12 +90,26 @@ class AppDetail extends React.Component {
     packages: [],
   };
 
+  componentDidMount() {
+    this.props.dispatch({ type: 'packages/fetch', payload: {appId: this.props.params.id}})
+  }
+
   componentWillReceiveProps(nextProps) {
-    const {App: {developers, publishers, news, packages = []}} = nextProps
+    const {App: {developers, publishers, news}, packages } = nextProps
+    // this.setState({
+    //   developers: {...defDevelopers, ...developers},
+    //   publishers: {...defPublishers, ...publishers},
+    //   packages: [...defPackages, ...packages],
+    //   news: {...defNews, ...news},
+    // })
+    if(this.state.packages.length !== packages) {
+      this.setState({
+        packages
+      })
+    }
     this.setState({
       developers: {...defDevelopers, ...developers},
       publishers: {...defPublishers, ...publishers},
-      packages: [...defPackages, ...packages],
       news: {...defNews, ...news},
     })
   }
@@ -135,6 +144,7 @@ class AppDetail extends React.Component {
       dispatch({type: "Apps/update", payload: {id, [field]: res.Key}})
     }
   }
+
 
   onSubmitBase = (e) => {
     const {form, dispatch, params: {id}} = this.props
@@ -194,14 +204,62 @@ class AppDetail extends React.Component {
         console.log('Received values of form: ', values);
 
         let {upload: {packages}} = values
-        const pack = packages.find(el => el.id == _pack.id)
 
-        dispatch({type: "Apps/updatePackage", payload: {id, package: pack}})
+
+        dispatch({type: "Apps/update", payload: {id, packages}})
       }
     });
   }
 
-  onAddPackage = (e) => {
+  onAddPackage = (e, pack) => {
+    const {form, dispatch, params: {id}} = this.props
+
+    e && e.preventDefault();
+    form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        console.log('Received values of form: ', values);
+        //
+        let {upload: {packages}} = values
+        const _package = packages.find(p => p.id == pack.id)
+
+        dispatch({type: "packages/add", payload: {appId: id, ..._package}})
+      }
+    });
+  }
+
+  onPatchPackage = (e, pack) => {
+    const {form, dispatch, params: {id}} = this.props
+
+    e && e.preventDefault();
+    form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        console.log('Received values of form: ', values);
+        //
+        let {upload: {packages}} = values
+        const _package = packages.find(p => p.id == pack.id)
+
+        dispatch({type: "packages/patch", payload: {appId: id, ..._package}})
+      }
+    });
+  }
+
+  onNewPackageVersion = (e, pack) => {
+    const {form, dispatch, params: {id}} = this.props
+
+    e && e.preventDefault();
+    form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        console.log('Received values of form: ', values);
+        //
+        let {upload: {packages}} = values
+        const _package = packages.find(p => p.id == pack.id)
+
+        dispatch({type: "packages/add", payload: {appId: id, ..._package}})
+      }
+    });
+  }
+
+  handleUrlUpload = (e, pack) => {
     const {form, dispatch, params: {id}} = this.props
 
     e && e.preventDefault();
@@ -210,23 +268,42 @@ class AppDetail extends React.Component {
         console.log('Received values of form: ', values);
 
         let {upload: {packages}} = values
+        const _package = packages.find(p => p.id == pack.id)
 
-
-        dispatch({type: "Apps/addPackage", payload: {id, packages}})
+        dispatch({type: "packages/urlUpload", payload: {appId: id, ..._package}})
       }
     });
   }
 
-  onDeletePackage = (_id) => {
+
+
+  // onUpdatePackage = (e) => {
+  //   const {form, dispatch, params: {id}} = this.props
+  //
+  //   e && e.preventDefault();
+  //   form.validateFieldsAndScroll((err, values) => {
+  //     if (!err) {
+  //       console.log('Received values of form: ', values);
+  //
+  //       // let {upload: {packages}} = values
+  //       let {packages} = this.state
+  //
+  //
+  //       dispatch({type: "Apps/updatePackage", payload: {id, packages}})
+  //     }
+  //   });
+  // }
+
+  onDeletePackage = (pack) => {
     const {form, dispatch, params: {id}} = this.props
 
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
 
         let {upload: {packages}} = values
-        packages.splice(_id, 1)
+        const _package = packages.find(p => p.id == pack.id)
 
-        dispatch({type: "Apps/update", payload: {id, packages}})
+        dispatch({type: "packages/delete", payload: {appId:id, ..._package}})
       }
     });
   }
@@ -246,7 +323,7 @@ class AppDetail extends React.Component {
     })
 
     // this.onSubmitUpload()
-    this.onAddPackage()
+    // this.onAddPackage()
   }
 
   remove = async (targetKey) => {
@@ -255,13 +332,17 @@ class AppDetail extends React.Component {
       content: '你真的确定要删除嘛？',
       onOk: async () => {
         let {packages} = this.state
+        let _package = packages[targetKey]
+
+        if(_package._id) {
+          this.onDeletePackage(_package)
+        }
+
         packages.splice(targetKey, 1)
 
-        await this.setState({
+        this.setState({
           packages
         })
-
-        return this.onDeletePackage(targetKey)
       },
     })
   }
@@ -287,11 +368,10 @@ class AppDetail extends React.Component {
   }
 
   render() {
-    const {form, App, loading} = this.props
+    const {form, App, loading, dispatch} = this.props
     const {getFieldDecorator} = form
     const {id, author, homepage, references = {}, dependencies = {}, description = {}, actions = {}, version = {}, name = {}, category, tags = [], locales = [], conference, icon, cover, background,} = App
     const {publishers, developers, previewVisible, previewImage, iconList, coverList, backgroundList, isCreateNews, news, packages} = this.state
-
 
     return (
       <Spin spinning={loading.global}>
@@ -682,6 +762,24 @@ class AppDetail extends React.Component {
                             )}
                           </FormItem>
 
+                          <FormItem {...formItemLayout} help="id" style={{display: "none"}}>
+                            {getFieldDecorator(`upload["packages"][${i}]["status"]`, {
+                              initialValue: pack["status"]
+                            })(
+                              <Input addonBefore={<Icon type="info-circle-o"/>} placeholder="status" disabled/>
+                            )}
+                          </FormItem>
+
+                          { pack["status"] !== 'uploaded' &&
+                          <FormItem {...formItemLayout} help="id" style={{display: "none"}}>
+                            {getFieldDecorator(`upload["packages"][${i}]["_id"]`, {
+                              initialValue: pack["_id"]
+                            })(
+                              <Input addonBefore={<Icon type="info-circle-o"/>} placeholder="_id" disabled/>
+                            )}
+                          </FormItem>
+                          }
+
                           <FormItem {...formItemLayout} help="name">
                             {getFieldDecorator(`upload["packages"][${i}]["name"]`, {
                               initialValue: pack["name"]
@@ -694,7 +792,8 @@ class AppDetail extends React.Component {
                             {getFieldDecorator(`upload["packages"][${i}]["version"]`, {
                               initialValue: pack["version"]
                             })(
-                              <Input addonBefore={<Icon type="info-circle-o"/>} placeholder="版本号"/>
+                              <Input addonBefore={<Icon type="info-circle-o"/>} placeholder="版本号"
+                                     disabled={pack.status !== 'new' && pack.status !== 'init' && pack.status !== 'failed'}/>
                             )}
                           </FormItem>
 
@@ -722,42 +821,97 @@ class AppDetail extends React.Component {
                             )}
                           </FormItem>
 
-                          <FormItem {...formItemLayout}>
+                          <FormItem {...formItemLayout} >
+                            <div className={styles.wrapSubmit}>
+                              {
+                                pack.status == 'uploaded' && <Button type="primary" onClick={(e) => this.onNewPackageVersion(e, pack)} size="large">发布新版本</Button>
+                              }
+                              {
+                                pack.status == 'uploading' && <Button type="primary"  size="large" disabled>上传中...</Button>
+                              }
+                              {
+                                pack.status == 'init' && <Button type="primary" onClick={(e) => this.onPatchPackage(e, pack)} size="large">保存</Button>
+                              }
+                              {
+                                pack.status == 'new' && <Button type="primary" onClick={(e) => this.onAddPackage(e, pack)} size="large">提交</Button>
+                              }
+                            </div>
+                          </FormItem>
+
+                          {
+                            pack.status == 'uploaded' &&
+                            <Card title="详细信息">
+                              <p>_id: {pack._id}</p>
+                              <p>id: {pack.id}</p>
+                              <p>name: {pack.name}</p>
+                              <p>version: {pack.version}</p>
+                              <p>locales: {pack.locales.map((locale, i) => {
+                                return <span key={i} style={{padding: "0 2px"}}>{locale}</span>
+                              })}</p>
+                              <p>platforms: {pack.platforms.map((platform,i) => {
+                                return <span key={i} style={{padding: "0 2px"}}>{platform}</span>
+                              })}</p>
+                              <p>files: {pack.files.length}</p>
+                            </Card>
+                          }
+
+                          {pack.status !== 'uploaded' &&<FormItem {...formItemLayout}>
                             {getFieldDecorator(`upload["packages"][${i}]["upload"]`, {})(
                               <Tabs defaultActiveKey="1" size="small">
                                 <TabPane tab="url上传" key="1">
                                   {getFieldDecorator(`upload["packages"][${i}]["url"]`, {
                                     // initialValue: pack["url"]
                                   })(
-                                    <div>
-                                      <Input addonBefore={<Icon type="uplaad"/>} placeholder="url"/>
-                                      请确认输入的链接真实有效~
+                                    <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                                      {
+                                        pack.status == 'failed' && <Alert message="上传失败，请重试" type="warning" showIcon />
+                                      }
+                                      <Input
+                                        addonBefore={<Icon type="upload"/>}
+                                        placeholder="请确认输入的链接真实有效~"
+                                        disabled={pack.status !== 'init' && pack.status !== 'failed'}/>
+
+                                      <Button
+                                        type="primary"
+                                        onClick={(e) => this.handleUrlUpload(e, pack)}
+                                        loading={loading.global}
+                                        size="small" style={{margin: "1vh 0"}}
+                                        disabled={pack.status !== 'init' && pack.status !== 'failed'}
+                                      >上传</Button>
                                     </div>
                                   )}
                                 </TabPane>
                                 <TabPane tab="直接上传" key="2">
+                                  {
+                                    pack.status == 'failed' && <Alert message="上传失败，请重试" type="warning" showIcon />
+                                  }
                                   <Dragger
                                     {...uploadProps}
-                                    action={`${config.apiRoot}/upload/packages/${pack["id"]}`}
-                                    disabled={pack.isNew}>
+                                    onChange={(info) => {
+                                      const status = info.file.status;
+                                      console.log(info)
+                                      if (status !== 'uploading') {
+                                        console.log(info.file, info.fileList);
+                                      }
+                                      if (status === 'done') {
+                                        dispatch({type: 'packages/fetch', payload: {appId: this.props.params.id}})
+                                      } else if (status === 'error') {
+                                        message.error(info.file.response.message);
+                                      }
+                                    }}
+                                    disabled={ pack.status !== 'init' && pack.status !== 'failed'}
+                                    action={`${config.apiRoot}/upload/package/${pack["_id"]}`}
+                                  >
                                     <p className="ant-upload-drag-icon">
                                       <Icon type="inbox"/>
                                     </p>
+
                                     <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                                    <p className="ant-upload-hint">Support for a single or bulk upload. Strictly
-                                      prohibit
-                                      from uploading company data or other band files</p>
                                   </Dragger>
                                 </TabPane>
                               </Tabs>
                             )}
-                          </FormItem>
-
-                          <FormItem {...formItemLayout} >
-                            <div className={styles.wrapSubmit}>
-                              <Button type="primary" htmlType="submit" size="large">提交</Button>
-                            </div>
-                          </FormItem>
+                          </FormItem>}
                         </Form>
                       </TabPane>
                     )
@@ -782,13 +936,17 @@ function mapStateToProps(state, props) {
   const {params: {id}} = props
   const {
     Apps: {apps},
+    packages: {packages},
     loading
   } = state
 
   const App = apps[id] || {}
+  const _packages = packages[id] || []
+
 
   return {
     loading,
+    packages: _packages,
     App
   };
 }
