@@ -299,6 +299,7 @@ class AppDetail extends React.Component {
 
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+        console.log('Received values of form: ', values);
 
         let {upload: {packages}} = values
         const _package = packages.find(p => p.id == pack.id)
@@ -375,7 +376,7 @@ class AppDetail extends React.Component {
 
     return (
       <Spin spinning={loading.global}>
-        <Tabs defaultActiveKey="1" className="app-detail-nav">
+        <Tabs defaultActiveKey="1" className="app-detail-nav" type="card">
           <TabPane tab={<span><Icon type="setting"/> 基本信息 </span>} key="1">
             <div className={styles.form}>
               <Form onSubmit={this.onSubmitBase}>
@@ -770,15 +771,13 @@ class AppDetail extends React.Component {
                             )}
                           </FormItem>
 
-                          { pack["status"] !== 'uploaded' &&
-                          <FormItem {...formItemLayout} help="id" style={{display: "none"}}>
+                          <FormItem {...formItemLayout} help="status" style={{display: "none"}}>
                             {getFieldDecorator(`upload["packages"][${i}]["_id"]`, {
                               initialValue: pack["_id"]
                             })(
                               <Input addonBefore={<Icon type="info-circle-o"/>} placeholder="_id" disabled/>
                             )}
                           </FormItem>
-                          }
 
                           <FormItem {...formItemLayout} help="name">
                             {getFieldDecorator(`upload["packages"][${i}]["name"]`, {
