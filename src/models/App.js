@@ -43,14 +43,17 @@ export default {
     }
   },
   effects: {
-    *submit({payload}, {call, put}){
+    *create({payload}, {call, put, select}){
       yield put({type: 'SubmitRequest', payload})
+
+      const {user} = yield select(state => state.user)
 
       const params = {
         id: payload.id,
         name: {
           [payload.locale]: payload.name
-        }
+        },
+        author: user.id,
       }
 
       try {
@@ -58,6 +61,7 @@ export default {
         if (data) {
           yield put({type: 'SubmitSuccess'})
           yield put({type: 'reset'})
+          yield put({type: 'Apps/fetch'})
           message.info("i18n 创建成功")
         }
       } catch (error) {

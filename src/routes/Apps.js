@@ -45,7 +45,7 @@ const columns = [
     sorter: true,
     width: '10%',
     key:'updated_at'
-  }, 
+  },
 ]
 
 function Apps({children, dispatch, isCreate, isSubmit, apps}) {
@@ -55,7 +55,7 @@ function Apps({children, dispatch, isCreate, isSubmit, apps}) {
     isLoading: isSubmit,
     onCancel: () => dispatch({ type: 'App/onCancel'}),
     onCreate: () => dispatch({ type: 'App/onCreate'}),
-    onSubmit: (payload) => dispatch({ type: 'App/submit', payload}),
+    onSubmit: (payload) => dispatch({ type: 'App/create', payload}),
   }
 
   const CreateButtonProps = {
@@ -74,8 +74,8 @@ function Apps({children, dispatch, isCreate, isSubmit, apps}) {
 
   return (
     <div className={styles.normal}>
-      
-      <Table {...TableProps}/>        
+
+      <Table {...TableProps}/>
 
       <Affix style={{ position: 'absolute', bottom: 50, right: 50}}>
         <Button {...CreateButtonProps} >
@@ -91,7 +91,7 @@ function Apps({children, dispatch, isCreate, isSubmit, apps}) {
 function mapStateToProps(state) {
   const {
     Apps: { apps },
-    App: { isCreate, isSubmit }
+    App: { isCreate, isSubmit },
   } = state
   return {
     apps,

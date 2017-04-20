@@ -123,25 +123,26 @@ class AppDetail extends React.Component {
     });
   }
 
-  handleChangeIco = ({fileList}) => {
+  handleChangeIco = ({file, fileList}) => {
     this.setState({iconList: fileList})
-    this.handleUpdateImg({fileList, field: 'icon'})
+    this.handleUpdateImg({file, fileList, field: 'icon'})
   }
-  handleChangeCover = ({fileList}) => {
+  handleChangeCover = ({file, fileList}) => {
     this.setState({coverList: fileList})
-    this.handleUpdateImg({fileList, field: 'cover'})
+    this.handleUpdateImg({file, fileList, field: 'cover'})
   }
-  handleChangeBackground = ({fileList}) => {
+  handleChangeBackground = ({file, fileList}) => {
     this.setState({backgroundList: fileList})
-    this.handleUpdateImg({fileList, field: 'background'})
+    this.handleUpdateImg({file, fileList, field: 'background'})
   }
 
-  handleUpdateImg = ({field, fileList}) => {
+  handleUpdateImg = ({file, field, fileList}) => {
     const {form, dispatch, params: {id}} = this.props
-    const [img] = fileList
-    if (img.status === 'done') {
+    if (file.status === 'done') {
       const [res] = img.response
       dispatch({type: "Apps/update", payload: {id, [field]: res.Key}})
+    } else if (file.status === 'error') {
+      message.error(file.response.message);
     }
   }
 
@@ -187,7 +188,9 @@ class AppDetail extends React.Component {
         const {version, actions, references, dependencies} = values
 
         Object.keys(actions).forEach((platform) => {
-          actions[platform] = JSON.parse(actions[platform])
+          if(actions[platform]) {
+            actions[platform] = JSON.parse(actions[platform])
+          }
         })
 
         dispatch({type: "Apps/update", payload: {id, version, actions, references, dependencies}})
@@ -376,7 +379,7 @@ class AppDetail extends React.Component {
 
     return (
       <Spin spinning={loading.global}>
-        <Tabs defaultActiveKey="1" className="app-detail-nav" type="card">
+        <Tabs defaultActiveKey="1" className="app-detail-nav">
           <TabPane tab={<span><Icon type="setting"/> 基本信息 </span>} key="1">
             <div className={styles.form}>
               <Form onSubmit={this.onSubmitBase}>
@@ -392,7 +395,7 @@ class AppDetail extends React.Component {
                       <div className="clearfix">
                         <Upload
                           multiple={false}
-                          action={`${config.apiRoot}/upload/image`}
+                          action={`${config.apiRoot}/v1/upload/image`}
                           listType="picture-card"
                           className="upload-icon"
                           fileList={iconList}
@@ -418,7 +421,7 @@ class AppDetail extends React.Component {
                       <div className="clearfix">
                         <Upload
                           multiple={false}
-                          action={`${config.apiRoot}/upload/image`}
+                          action={`${config.apiRoot}/v1/upload/image`}
                           listType="picture-card"
                           className="upload-icon"
                           fileList={coverList}
@@ -444,7 +447,7 @@ class AppDetail extends React.Component {
                       <div className="clearfix">
                         <Upload
                           multiple={false}
-                          action={`${config.apiRoot}/upload/image`}
+                          action={`${config.apiRoot}/v1/upload/image`}
                           listType="picture-card"
                           className="upload-icon"
                           fileList={backgroundList}
@@ -899,7 +902,7 @@ class AppDetail extends React.Component {
                                       }
                                     }}
                                     disabled={ pack.status !== 'init' && pack.status !== 'failed'}
-                                    action={`${config.apiRoot}/upload/package/${pack["_id"]}`}
+                                    action={`${config.apiRoot}/v1/upload/package/${pack["_id"]}`}
                                   >
                                     <p className="ant-upload-drag-icon">
                                       <Icon type="inbox"/>
