@@ -6,9 +6,18 @@ export default {
   namespace: 'Common',
   state: {
     collapsed: false,
-    mode: 'inline'
+    mode: 'inline',
+    isUpload: false,
+    percent: 0,
+    uploadStatus: '',
   },
   reducers: {
+    upload(state, action) {
+      return {
+        ...state,
+        ...action.payload,
+      }
+    },
     collapsed (state) {
       const mode = state.collapsed ? 'inline' : 'vertical'
       return {...state, collapsed: !state.collapsed, mode}

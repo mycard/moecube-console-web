@@ -57,6 +57,7 @@ export default {
       try {
         const {data} = yield call(urlUpload, payload)
         yield put({ type: 'success', payload: {packages: data}, appId: payload.appId})
+        message.info('上传成功, 打包中...')
       } catch (e) {
         message.error(e.message)
       }

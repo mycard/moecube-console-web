@@ -19,6 +19,7 @@ import {
   Table,
   Badge,
   Alert,
+  Progress,
   message,
   Popconfirm,
   Row,
@@ -91,18 +92,18 @@ class AppDetail extends React.Component {
   };
 
   componentDidMount() {
-    this.props.dispatch({ type: 'packages/fetch', payload: {appId: this.props.params.id}})
+    this.props.dispatch({type: 'packages/fetch', payload: {appId: this.props.params.id}})
   }
 
   componentWillReceiveProps(nextProps) {
-    const {App: {developers, publishers, news}, packages } = nextProps
+    const {App: {developers, publishers, news}, packages} = nextProps
     // this.setState({
     //   developers: {...defDevelopers, ...developers},
     //   publishers: {...defPublishers, ...publishers},
     //   packages: [...defPackages, ...packages],
     //   news: {...defNews, ...news},
     // })
-    if(this.state.packages.length !== packages) {
+    if (this.state.packages.length !== packages) {
       this.setState({
         packages
       })
@@ -188,7 +189,7 @@ class AppDetail extends React.Component {
         const {version, actions, references, dependencies} = values
 
         Object.keys(actions).forEach((platform) => {
-          if(actions[platform]) {
+          if (actions[platform]) {
             actions[platform] = JSON.parse(actions[platform])
           }
         })
@@ -279,7 +280,6 @@ class AppDetail extends React.Component {
   }
 
 
-
   // onUpdatePackage = (e) => {
   //   const {form, dispatch, params: {id}} = this.props
   //
@@ -307,7 +307,7 @@ class AppDetail extends React.Component {
         let {upload: {packages}} = values
         const _package = packages.find(p => p.id == pack.id)
 
-        dispatch({type: "packages/delete", payload: {appId:id, ..._package}})
+        dispatch({type: "packages/delete", payload: {appId: id, ..._package}})
       }
     });
   }
@@ -338,7 +338,7 @@ class AppDetail extends React.Component {
         let {packages} = this.state
         let _package = packages[targetKey]
 
-        if(_package._id) {
+        if (_package._id) {
           this.onDeletePackage(_package)
         }
 
@@ -756,7 +756,7 @@ class AppDetail extends React.Component {
                   if (pack) {
                     return (
                       <TabPane tab={pack.name || "New"} key={i} closable={packages.length > 1}>
-                        <Form onSubmit={e => this.onSubmitUpload(e, pack)}>
+                        <Form >
 
                           <FormItem {...formItemLayout} help="id">
                             {getFieldDecorator(`upload["packages"][${i}]["id"]`, {
@@ -826,16 +826,22 @@ class AppDetail extends React.Component {
                           <FormItem {...formItemLayout} >
                             <div className={styles.wrapSubmit}>
                               {
-                                pack.status == 'uploaded' && <Button type="primary" onClick={(e) => this.onNewPackageVersion(e, pack)} size="large">发布新版本</Button>
+                                pack.status == 'uploaded' &&
+                                <Button type="primary" onClick={(e) => this.onNewPackageVersion(e, pack)} size="large">发布新版本</Button>
                               }
                               {
-                                pack.status == 'uploading' && <Button type="primary"  size="large" disabled>上传中...</Button>
+                                pack.status == 'uploading' &&
+                                <Button type="primary" size="large" disabled>处理中...</Button>
                               }
                               {
-                                pack.status == 'init' && <Button type="primary" onClick={(e) => this.onPatchPackage(e, pack)} size="large">保存</Button>
+                                pack.status == 'init' &&
+                                <Button type="primary" onClick={(e) => this.onPatchPackage(e, pack)}
+                                        size="large">保存</Button>
                               }
                               {
-                                pack.status == 'new' && <Button type="primary" onClick={(e) => this.onAddPackage(e, pack)} size="large">提交</Button>
+                                pack.status == 'new' &&
+                                <Button type="primary" onClick={(e) => this.onAddPackage(e, pack)}
+                                        size="large">提交</Button>
                               }
                             </div>
                           </FormItem>
@@ -850,14 +856,17 @@ class AppDetail extends React.Component {
                               <p>locales: {pack.locales.map((locale, i) => {
                                 return <span key={i} style={{padding: "0 2px"}}>{locale}</span>
                               })}</p>
-                              <p>platforms: {pack.platforms.map((platform,i) => {
+                              <p>platforms: {pack.platforms.map((platform, i) => {
                                 return <span key={i} style={{padding: "0 2px"}}>{platform}</span>
                               })}</p>
                               <p>files: {pack.files.length}</p>
+                              {
+                                pack.status == 'uploaded' && this.checkUploading && clearInterval(this.checkUploading)
+                              }
                             </Card>
                           }
 
-                          {pack.status !== 'uploaded' &&<FormItem {...formItemLayout}>
+                          {pack.status !== 'uploaded' && <FormItem {...formItemLayout}>
                             {getFieldDecorator(`upload["packages"][${i}]["upload"]`, {})(
                               <Tabs defaultActiveKey="1" size="small">
                                 <TabPane tab="url上传" key="1">
@@ -866,7 +875,7 @@ class AppDetail extends React.Component {
                                   })(
                                     <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
                                       {
-                                        pack.status == 'failed' && <Alert message="上传失败，请重试" type="warning" showIcon />
+                                        pack.status == 'failed' && <Alert message="上传失败，请重试" type="warning" showIcon/>
                                       }
                                       <Input
                                         addonBefore={<Icon type="upload"/>}
@@ -885,25 +894,30 @@ class AppDetail extends React.Component {
                                 </TabPane>
                                 <TabPane tab="直接上传" key="2">
                                   {
-                                    pack.status == 'failed' && <Alert message="上传失败，请重试" type="warning" showIcon />
+                                    pack.status == 'failed' && <Alert message="上传失败，请重试" type="warning" showIcon/>
                                   }
                                   <Dragger
                                     {...uploadProps}
                                     onChange={(info) => {
                                       const status = info.file.status;
-                                      console.log(info)
-                                      if (status !== 'uploading') {
-                                        console.log(info.file, info.fileList);
+
+                                      if (status == 'uploading') {
+                                        dispatch({type: 'Common/upload', payload: {percent: info.file.percent, uploadStatus: 'active', isUpload: true}})
                                       }
                                       if (status === 'done') {
+                                        message.info('上传成功, 打包中...', 3)
                                         dispatch({type: 'packages/fetch', payload: {appId: this.props.params.id}})
+                                        dispatch({type: 'Common/upload', payload: {percent: 0, uploadStatus: '', isUpload: false}})
+
                                       } else if (status === 'error') {
+                                        dispatch({type: 'Common/upload', payload: {percent: info.file.percent, uploadStatus: 'exception', isUpload: true}})
                                         message.error(info.file.response.message);
                                       }
                                     }}
                                     disabled={ pack.status !== 'init' && pack.status !== 'failed'}
                                     action={`${config.apiRoot}/v1/upload/package/${pack["_id"]}`}
                                   >
+
                                     <p className="ant-upload-drag-icon">
                                       <Icon type="inbox"/>
                                     </p>
@@ -939,6 +953,7 @@ function mapStateToProps(state, props) {
   const {
     Apps: {apps},
     packages: {packages},
+    Common: {isUpload, percent, uploadStatus},
     loading
   } = state
 
@@ -948,6 +963,9 @@ function mapStateToProps(state, props) {
 
   return {
     loading,
+    isUpload,
+    percent,
+    uploadStatus,
     packages: _packages,
     App
   };
