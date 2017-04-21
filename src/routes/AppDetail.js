@@ -896,6 +896,9 @@ class AppDetail extends React.Component {
                                   {
                                     pack.status == 'failed' && <Alert message="上传失败，请重试" type="warning" showIcon/>
                                   }
+                                  {
+                                    this.props.isUpload && <Progress percent={this.props.percent} status={this.props.status}/>
+                                  }
                                   <Dragger
                                     {...uploadProps}
                                     onChange={(info) => {

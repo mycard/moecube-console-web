@@ -3,8 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="7dc474d0-9fc0-4b76-8c2f-3c98df702116" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/models/Common.js" afterPath="$PROJECT_DIR$/src/models/Common.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/models/packages.js" afterPath="$PROJECT_DIR$/src/models/packages.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/routes/AppDetail.js" afterPath="$PROJECT_DIR$/src/routes/AppDetail.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
@@ -23,22 +21,24 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="AppDetail.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/routes/AppDetail.js">
+      <file leaf-file-name="packages.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/models/packages.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="186">
-              <caret line="249" column="2" lean-forward="false" selection-start-line="249" selection-start-column="2" selection-end-line="249" selection-end-column="2" />
+            <state relative-caret-position="18">
+              <caret line="43" column="19" lean-forward="false" selection-start-line="43" selection-start-column="19" selection-end-line="43" selection-end-column="19" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="packages.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/models/packages.js">
+      <file leaf-file-name="AppDetail.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/routes/AppDetail.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="468">
-              <caret line="43" column="19" lean-forward="true" selection-start-line="43" selection-start-column="19" selection-end-line="43" selection-end-column="19" />
-              <folding />
+            <state relative-caret-position="1840">
+              <caret line="927" column="112" lean-forward="true" selection-start-line="927" selection-start-column="112" selection-end-line="927" selection-end-column="112" />
+              <folding>
+                <element signature="e#0#26#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -57,7 +57,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>pack</find>
       <find>upload</find>
       <find>message</find>
       <find>success</find>
@@ -86,6 +85,7 @@
       <find>\n    \}\,</find>
       <find>isCreate</find>
       <find>status</find>
+      <find>this.props.isup</find>
       <find>progress</find>
     </findStrings>
   </component>
@@ -134,8 +134,8 @@
     <handled-path value="$PROJECT_DIR$/node_modules" />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="494" />
-    <option name="y" value="184" />
+    <option name="x" value="660" />
+    <option name="y" value="83" />
     <option name="width" value="1383" />
     <option name="height" value="968" />
   </component>
@@ -154,6 +154,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -236,7 +237,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
       <pane id="Scratches" />
     </panes>
   </component>
@@ -348,14 +348,15 @@
       <workItem from="1492407287300" duration="48898000" />
       <workItem from="1492655820276" duration="16418000" />
       <workItem from="1492741762508" duration="2198000" />
+      <workItem from="1492753784584" duration="2539000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="72055000" />
+    <option name="totallyTimeSpent" value="74594000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="494" y="184" width="1383" height="968" extended-state="0" />
+    <frame x="660" y="83" width="1383" height="968" extended-state="1" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25624081" sideWeight="0.49315068" order="0" side_tool="false" content_ui="combo" />
@@ -723,17 +724,19 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/models/packages.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="468">
-          <caret line="43" column="19" lean-forward="true" selection-start-line="43" selection-start-column="19" selection-end-line="43" selection-end-column="19" />
+        <state relative-caret-position="18">
+          <caret line="43" column="19" lean-forward="false" selection-start-line="43" selection-start-column="19" selection-end-line="43" selection-end-column="19" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/routes/AppDetail.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="186">
-          <caret line="249" column="2" lean-forward="false" selection-start-line="249" selection-start-column="2" selection-end-line="249" selection-end-column="2" />
-          <folding />
+        <state relative-caret-position="1840">
+          <caret line="927" column="112" lean-forward="true" selection-start-line="927" selection-start-column="112" selection-end-line="927" selection-end-column="112" />
+          <folding>
+            <element signature="e#0#26#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
