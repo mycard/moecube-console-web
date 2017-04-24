@@ -1,32 +1,26 @@
-import React from 'react';
-import {connect} from 'dva';
-import styles from './AppDetail.less';
-import config from '../config'
-import vercomp from 'vercomp'
-import uuid from 'uuid'
+import React from "react";
+import {connect} from "dva";
+import styles from "./AppDetail.less";
+import config from "../config";
+import uuid from "uuid";
 import {
-  Form,
-  Input,
-  Icon,
-  Radio,
-  Tag,
-  Tooltip,
-  Button,
-  Select,
-  Tabs,
-  Upload,
-  Modal,
-  Table,
-  Badge,
   Alert,
-  Progress,
-  message,
-  Popconfirm,
-  Row,
-  Col,
+  Button,
   Card,
+  Col,
+  Form,
+  Icon,
+  Input,
+  message,
+  Modal,
+  Progress,
+  Radio,
+  Row,
+  Select,
   Spin,
-} from 'antd'
+  Tabs,
+  Upload
+} from "antd";
 const FormItem = Form.Item;
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
@@ -897,7 +891,8 @@ class AppDetail extends React.Component {
                                     pack.status == 'failed' && <Alert message="上传失败，请重试" type="warning" showIcon/>
                                   }
                                   {
-                                    this.props.isUpload && <Progress percent={this.props.percent} status={this.props.status}/>
+                                    this.props.isUpload &&
+                                    <Progress percent={this.props.percent} status={this.props.status}/>
                                   }
                                   <Dragger
                                     {...uploadProps}
@@ -905,15 +900,28 @@ class AppDetail extends React.Component {
                                       const status = info.file.status;
 
                                       if (status == 'uploading') {
-                                        dispatch({type: 'Common/upload', payload: {percent: info.file.percent, uploadStatus: 'active', isUpload: true}})
+                                        dispatch({
+                                          type: 'Common/upload',
+                                          payload: {percent: info.file.percent, uploadStatus: 'active', isUpload: true}
+                                        })
                                       }
                                       if (status === 'done') {
                                         message.info('上传成功, 打包中...', 3)
                                         dispatch({type: 'packages/fetch', payload: {appId: this.props.params.id}})
-                                        dispatch({type: 'Common/upload', payload: {percent: 0, uploadStatus: '', isUpload: false}})
+                                        dispatch({
+                                          type: 'Common/upload',
+                                          payload: {percent: 0, uploadStatus: '', isUpload: false}
+                                        })
 
                                       } else if (status === 'error') {
-                                        dispatch({type: 'Common/upload', payload: {percent: info.file.percent, uploadStatus: 'exception', isUpload: true}})
+                                        dispatch({
+                                          type: 'Common/upload',
+                                          payload: {
+                                            percent: info.file.percent,
+                                            uploadStatus: 'exception',
+                                            isUpload: true
+                                          }
+                                        })
                                         message.error(info.file.response.message);
                                       }
                                     }}
