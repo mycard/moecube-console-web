@@ -8,8 +8,8 @@ import {Layout} from "antd";
 class Entry extends React.Component {
 
   componentWillMount() {
-    const {dispatch, location:{pathname}} = this.props
-    if(pathname !== 'loginCallback') {
+    const {dispatch, location: {pathname}} = this.props
+    if (pathname !== 'loginCallback') {
       dispatch({type: 'Common/init'})
     }
   }
