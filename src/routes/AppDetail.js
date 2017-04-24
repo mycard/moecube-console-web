@@ -476,10 +476,12 @@ class AppDetail extends React.Component {
                 </FormItem>
 
                 <FormItem
-                  {...formItemLayout}
-                  help="以 http:// 或 https:// 开头，没有可留空">
+                  {...formItemLayout}>
                   {getFieldDecorator('homepage', {
-                    initialValue: homepage
+                    initialValue: homepage,
+                    rules: [{
+                      type: 'url', message: '以 http:// 或 https:// 开头，没有可留空',
+                    }]
                   })(
                     <Input addonBefore={<Icon type="home"/>} placeholder="网站"/>
                   )}
@@ -496,13 +498,11 @@ class AppDetail extends React.Component {
                 </FormItem>
 
                 <FormItem
-                  {...formItemLayout}
-                  help="JSON string[]，不会写请联系 zh99998@gmail.com"
-                >
+                  {...formItemLayout}>
                   {getFieldDecorator('tags', {
                     initialValue: tags
                   })(
-                    <Select tags style={{width: '100%'}} placeholder="标签">
+                    <Select mode="tags" style={{width: '100%'}} placeholder="标签">
                     </Select>
                   )}
                 </FormItem>
@@ -512,7 +512,7 @@ class AppDetail extends React.Component {
                     initialValue: locales
                   })(
                     <Select
-                      tags
+                      mode="tags"
                       style={{width: '100%'}}
                       placeholder="游戏支持的语言">
                       {defLocales.map((locale, i) => {
@@ -715,7 +715,7 @@ class AppDetail extends React.Component {
                         {getFieldDecorator(`dependencies[${platform}]`, {
                           initialValue: dependencies[platform]
                         })(
-                          <Select tags style={{width: '100%'}} placeholder="dependencies">
+                          <Select mode="tags" style={{width: '100%'}} placeholder="dependencies">
                           </Select>
                         )}
                       </FormItem>
@@ -724,7 +724,7 @@ class AppDetail extends React.Component {
                         {getFieldDecorator(`references[${platform}]`, {
                           initialValue: references[platform]
                         })(
-                          <Select tags style={{width: '100%'}} placeholder="references">
+                          <Select mode="tags" style={{width: '100%'}} placeholder="references">
                           </Select>
                         )}
                       </FormItem>
@@ -797,7 +797,7 @@ class AppDetail extends React.Component {
                             {getFieldDecorator(`upload["packages"][${i}]["platforms"]`, {
                               initialValue: pack["platforms"]
                             })(
-                              <Select multiple style={{width: '100%'}} placeholder="platforms">
+                              <Select mode="multiple" style={{width: '100%'}} placeholder="platforms">
                                 {defPlatform.map((_platform, i) => {
                                   return <Select.Option key={i} value={_platform}>{_platform}</Select.Option>
                                 })}
@@ -809,7 +809,7 @@ class AppDetail extends React.Component {
                             {getFieldDecorator(`upload["packages"][${i}]["locales"]`, {
                               initialValue: pack["locales"]
                             })(
-                              <Select multiple style={{width: '100%'}} placeholder="locales">
+                              <Select mode="multiple" style={{width: '100%'}} placeholder="locales">
                                 {defLocales.map((_locales, i) => {
                                   return <Select.Option key={i} value={_locales}>{_locales}</Select.Option>
                                 })}

@@ -13,13 +13,11 @@ const columns = [
     sorter: (a, b) => a.id - b.id,
     render: id => <Link to={`apps/${id}`}>{id}</Link>,
     width: '10%',
-    key:'id'
   }, {
     title: 'Name',
     dataIndex: 'name',
     render: name => name && name["zh-CN"],
     width: '10%',
-    key: 'name'
   },{
     title: "author",
     dataIndex: 'author',
@@ -38,13 +36,11 @@ const columns = [
     dataIndex: 'released_at',
     sorter: true,
     width: '10%',
-    key:'released_at'
   }, {
     title: "Updated_at",
     dataIndex: 'updated_at',
     sorter: true,
     width: '10%',
-    key:'updated_at'
   },
 ]
 
@@ -67,10 +63,10 @@ function Apps({children, dispatch, isCreate, isSubmit, apps}) {
   }
 
   const TableProps = {
+    rowKey: row => row.id,
     columns,
     dataSource: Object.values(apps)
   }
-
 
   return (
     <div className={styles.normal}>
