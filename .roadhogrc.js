@@ -1,4 +1,7 @@
+let publicPath = 'https://cdn01.moecube.com/console/';
+
 export default {
+  publicPath,
   "entry": "src/index.js",
   "env": {
     "development": {
