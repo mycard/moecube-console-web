@@ -35,9 +35,6 @@ export default {
   subscriptions: {
     setup({dispatch, history}) {
 
-      if (location.pathname != '/loginCallback') {
-        dispatch({type: 'init'})
-      }
       return history.listen(({pathname, query}) => {
         if (pathname === '/login') {
           let params = new URLSearchParams()
