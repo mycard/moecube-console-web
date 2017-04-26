@@ -3,7 +3,7 @@ let publicPath = 'https://cdn01.moecube.com/console/';
 const API_ROOT = {
   development: 'http://localhost:8001',
   test: 'http://114.215.243.95:8001',
-  production: 'https://moecube.com/console'
+  production: 'https://api.moecube.com/console'
 };
 const RETURN_SSO = {
   development: `http://localhost:8000/loginCallback`,
@@ -13,7 +13,7 @@ const RETURN_SSO = {
 
 const BASENAME = {
   development: ``,
-  test:``,
+  test: ``,
   production: '/console'
 }
 
