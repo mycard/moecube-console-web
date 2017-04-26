@@ -46,11 +46,6 @@ const columns = [
 
 class Apps extends React.Component {
 
-  componentWillMount() {
-    const {dispatch} = this.props
-    console.log(this.props)
-  }
-
   render() {
     const {children, dispatch, isCreate, isSubmit, apps} = this.props
 

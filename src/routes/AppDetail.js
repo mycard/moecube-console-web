@@ -3,6 +3,7 @@ import {connect} from "dva";
 import styles from "./AppDetail.less";
 import config from "../config";
 import uuid from "uuid";
+import moment from 'moment'
 import {
   Alert,
   Button,
@@ -18,6 +19,7 @@ import {
   Row,
   Select,
   Spin,
+  DatePicker,
   Tabs,
   Upload
 } from "antd";
@@ -109,7 +111,7 @@ class AppDetail extends React.Component {
     })
   }
 
-  handleCancel = () => this.setState({previewVisible: false})
+  handleCancel = () => this.setState({previewVisible: false});
 
   handlePreview = (file) => {
     this.setState({
@@ -150,9 +152,9 @@ class AppDetail extends React.Component {
       if (!err) {
         console.log('Received values of form: ', values);
 
-        const {category, homepage, conference, tags, locales} = values
+        const {category, homepage, conference, tags, locales, released_at} = values
 
-        dispatch({type: "Apps/update", payload: {id, category, homepage, conference, tags, locales}})
+        dispatch({type: "Apps/update", payload: {id, category, homepage, conference, tags, locales, released_at}})
       }
     });
   }
@@ -368,7 +370,7 @@ class AppDetail extends React.Component {
   render() {
     const {form, App, loading, dispatch} = this.props
     const {getFieldDecorator} = form
-    const {id, author, homepage, references = {}, dependencies = {}, description = {}, actions = {}, version = {}, name = {}, category, tags = [], locales = [], conference, icon, cover, background,} = App
+    const {id, author, homepage, references = {}, dependencies = {}, description = {}, actions = {}, version = {}, name = {}, category, tags = [], locales = [], conference, icon, cover, background, released_at} = App
     const {publishers, developers, previewVisible, previewImage, iconList, coverList, backgroundList, isCreateNews, news, packages} = this.state
 
     return (
@@ -519,6 +521,15 @@ class AppDetail extends React.Component {
                         return <Select.Option key={i} value={locale}>{locale}</Select.Option>
                       })}
                     </Select>
+                  )}
+                </FormItem>
+
+                <FormItem
+                  {...formItemLayout}>
+                  {getFieldDecorator('released_at', {
+                    initialValue: moment(released_at, 'YYYY-MM-DD')
+                  })(
+                    <DatePicker placeholder="发布日期" />
                   )}
                 </FormItem>
 
