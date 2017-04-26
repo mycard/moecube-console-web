@@ -1,9 +1,10 @@
-import ReactDOM from 'react-dom';
-import {browserHistory} from 'dva/router'
-import createLoading from 'dva-loading'
-import {message} from 'antd'
-import dva from 'dva';
-import './index.less';
+import ReactDOM from "react-dom";
+import {useRouterHistory} from "dva/router";
+import {createHistory} from "history";
+import createLoading from "dva-loading";
+import {message} from "antd";
+import dva from "dva";
+import "./index.less";
 
 // 1. Initialize
 const app = dva({
@@ -11,7 +12,9 @@ const app = dva({
     message.destroy();
     message.error(error.message);
   },
-  history: browserHistory,
+  history: useRouterHistory(createHistory)({
+    basename: BASENAME
+  }),
 });
 
 app.model(require("./models/Apps"));

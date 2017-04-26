@@ -11,7 +11,14 @@ const RETURN_SSO = {
   production: `https://moecube.com/console/loginCallback`
 };
 
+const BASENAME = {
+  development: ``,
+  test:``,
+  production: '/console'
+}
+
 let defineConf = {
+  BASENAME: BASENAME[process.env['ENV']],
   apiRoot: API_ROOT[process.env['ENV']],
   returnSSO: RETURN_SSO[process.env['ENV']]
 };
