@@ -7,7 +7,7 @@ const API_ROOT = {
 };
 const RETURN_SSO = {
   development: `http://localhost:8000/loginCallback`,
-  test: `http://114.215.243.95:8000/loginCallback`,
+  test: `http://localhost:8000/loginCallback`,
   production: `https://moecube.com/console/loginCallback`
 };
 

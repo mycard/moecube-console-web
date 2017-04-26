@@ -2,6 +2,7 @@
   "private": true,
   "scripts": {
     "start": "cross-env ENV=development roadhog server",
+    "start:test":"cross-env ENV=test roadhog server",
     "build:test": "cross-env ENV=test roadhog build",
     "build": "cross-env ENV=production roadhog build",
     "lint": "eslint --ext .js src test",
